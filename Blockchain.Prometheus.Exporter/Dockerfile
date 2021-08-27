@@ -1,12 +1,12 @@
-﻿FROM mcr.microsoft.com/dotnet/runtime:5.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/sdk:5.0 AS base
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Blockchain.Prometheus.Exporter/Blockchain.Prometheus.Exporter.csproj", "Blockchain.Prometheus.Exporter/"]
+COPY ["Blockchain.Prometheus.Exporter.csproj", "Blockchain.Prometheus.Exporter/"]
 RUN dotnet restore "Blockchain.Prometheus.Exporter/Blockchain.Prometheus.Exporter.csproj"
-COPY . .
 WORKDIR "/src/Blockchain.Prometheus.Exporter"
+COPY . .
 RUN dotnet build "Blockchain.Prometheus.Exporter.csproj" -c Release -o /app/build
 
 FROM build AS publish
