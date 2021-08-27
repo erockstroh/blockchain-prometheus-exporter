@@ -1,0 +1,15 @@
+﻿{
+    "$schema": "http://json.schemastore.org/launchsettings.json",
+    "profiles": {
+        "Blockchain.Prometheus.Exporter": {
+            "commandName": "Project",
+            "launchBrowser": false,
+            "applicationUrl": "http://localhost:9368",
+            "environmentVariables": {
+                "LOGGING_LOKI_LOGLEVEL": "Debug",
+                "RPC_URL": "https://rpc.bc-labs.dev/mainnet/erigon",
+                "RPC_TARGET": "Ethereum"
+            }
+        }
+    }
+}
