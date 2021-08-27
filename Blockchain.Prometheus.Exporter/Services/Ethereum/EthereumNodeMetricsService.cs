@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Blockchain.Prometheus.Exporter.Models;
 using Blockchain.Prometheus.Exporter.Models.Ethereum;
 using Blockchain.Prometheus.Exporter.Models.Rpc;
 using Microsoft.Extensions.Logging;
@@ -19,13 +19,6 @@ namespace Blockchain.Prometheus.Exporter.Services.Ethereum
         /// Preferred timeout for waiting between collection tasks.
         /// </summary>
         protected override TimeSpan TaskTimeout { get; } = TimeSpan.FromMinutes(1);
-
-        /// <summary>
-        /// Regular expression for parsing client versions.
-        /// </summary>
-        private readonly Regex _versionRegex = new Regex(
-            @"^(?<client>[^/]+)//?(?<version>(?<short>v?\d+\.\d+\.\d+)[^/]+)/(?<arch>[^/]+)/(?<lang>[^$]+)$",
-            RegexOptions.Compiled);
 
         /// <summary>
         /// Creates a new <see cref="EthereumNodeMetricsService"/> instance.
@@ -55,21 +48,11 @@ namespace Blockchain.Prometheus.Exporter.Services.Ethereum
 
             string result = await GetStringRpcResult(responses, request.Id);
 
-            Match match = _versionRegex.Match(result);
+            NodeClientVersion clientVersion = CodeMonkey.ExtractNodeVersion(result);
 
-            if (!match.Success)
-            {
-                return;
-            }
-
-            string client = match.Groups["client"].Value;
-            string version = match.Groups["version"].Value;
-            string shortVersion = match.Groups["short"].Value;
-            string architecture = match.Groups["arch"].Value;
-            string language = match.Groups["lang"].Value;
-
-            EthereumMetricsCollection.NodeMetrics.NodeVersion.WithLabels(client, version, shortVersion,
-                                          architecture, language)
+            EthereumMetricsCollection.NodeMetrics.NodeVersion.WithLabels(clientVersion.Client, clientVersion.Version,
+                                          clientVersion.ShortVersion, clientVersion.Architecture,
+                                          clientVersion.Language)
                                      .Set(1);
         }
     }

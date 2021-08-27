@@ -7,7 +7,7 @@ namespace Blockchain.Prometheus.Exporter
 {
     public class Program
     {
-        public static void Main(params string[ ] args)
+        static void Main(params string[ ] args)
         {
             CreateWebHostBuilder(args).Build().Run();
         }
